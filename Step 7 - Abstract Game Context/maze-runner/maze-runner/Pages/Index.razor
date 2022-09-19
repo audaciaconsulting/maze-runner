@@ -1,0 +1,91 @@
+﻿@page "/"
+@using Blazor.Extensions
+@using Blazor.Extensions.Canvas.Canvas2D
+@using maze_runner.game
+
+@inject IJSRuntime JsRuntime
+
+@if (Initialized)
+{
+    <Assets Sprites="_game.Sprites" />
+}
+
+<div id="canvasContainer">
+    <BECanvas @ref="_canvas"></BECanvas>
+</div>
+
+@code
+{
+    private Canvas2DContext _context;
+    private BECanvasComponent _canvas;
+    private Game _game;
+
+    [Parameter]
+    public bool Initialized { get; set; } = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _context = await this._canvas.CreateCanvas2DAsync();
+
+        if (!Initialized)
+        {
+            await InitGame();
+            Initialized = true;
+            this.StateHasChanged();
+        }
+    }
+
+    private async ValueTask InitGame()
+    {
+        var canvasMeta = await JsRuntime.InvokeAsync<CanvasMeta>("initCanvas", DotNetObjectReference.Create(this));
+        _canvas.Height = canvasMeta.Height;
+        _canvas.Width = canvasMeta.Width;
+
+        await JsRuntime.InvokeAsync<object>("gameWindowResize", DotNetObjectReference.Create(this));
+
+        // Initialize the game
+        var blazorContext = new BlazorGameContext(_context);
+        _game = new Game(blazorContext);
+        _game.Initialize();
+    }
+
+    [JSInvokable]
+    public async ValueTask GameLoop()
+    {
+        _game.Update();
+
+        await _context.ClearRectAsync(0, 0, _canvas.Width, _canvas.Height);
+        _game.Draw();
+    }
+
+    [JSInvokable]
+    public async ValueTask OnResize(int screenWidth, int screenHeight)
+    {
+    }
+
+    [JSInvokable]
+    public async ValueTask OnKeyDown(int keyCode)
+    {
+    }
+
+    [JSInvokable]
+    public async ValueTask OnKeyUp(int keyCode)
+    {
+    }
+
+    [JSInvokable]
+    public async ValueTask OnMouseDown(int mouseButtonCode, int x, int y)
+    {
+    }
+
+    [JSInvokable]
+    public async ValueTask OnMouseUp(int mouseButtonCode, int x, int y)
+    {
+    }
+
+    public class CanvasMeta
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
+    }
+}
