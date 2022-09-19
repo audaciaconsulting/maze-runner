@@ -19,6 +19,7 @@
     private Canvas2DContext _context;
     private BECanvasComponent _canvas;
     private Game _game;
+    private BlazorGameContext _blazorContext;
 
     [Parameter]
     public bool Initialized { get; set; } = false;
@@ -44,8 +45,11 @@
         await JsRuntime.InvokeAsync<object>("gameWindowResize", DotNetObjectReference.Create(this));
 
         // Initialize the game
-        var blazorContext = new BlazorGameContext(_context);
-        _game = new Game(blazorContext);
+        _blazorContext = new BlazorGameContext(_context);
+        _blazorContext.Width = (int)_canvas.Width;
+        _blazorContext.Height = (int)_canvas.Height;
+        _game = new Game(_blazorContext);
+        _game.LoadContent();
         _game.Initialize();
     }
 
@@ -61,6 +65,11 @@
     [JSInvokable]
     public async ValueTask OnResize(int screenWidth, int screenHeight)
     {
+        _canvas.Height = screenHeight;
+        _canvas.Width = screenWidth;
+        _blazorContext.Width = screenWidth;
+        _blazorContext.Height = screenHeight;
+        _game.Initialize();
     }
 
     [JSInvokable]

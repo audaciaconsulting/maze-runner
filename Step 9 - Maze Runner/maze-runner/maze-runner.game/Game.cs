@@ -10,12 +10,14 @@ namespace maze_runner.game
         private Sprite _block { get; set; }
         private IGameContext _context;
 
+        private Vector2[] _maze;
+
         public Game(IGameContext context)
         {
             _context = context;
         }
 
-        public void Initialize()
+        public void LoadContent()
         {
             _block = new Sprite
             {
@@ -23,17 +25,81 @@ namespace maze_runner.game
             };
 
             Sprites.Add(_block);
+        }
 
-            _gameObjects.Add(new GameObject
+        public void Initialize()
+        {
+            var widthRatio = (float)_context.Width / (float)(13 * 100);
+            var widthStep = 100 * widthRatio;
+            var firstBlockWidth = widthStep / 2;
+
+            var heightRatio = (float)_context.Height / (float)(8 * 100);
+            var heightStep = 100 * heightRatio;
+            var firstBlockHeight = heightStep / 2;
+
+            _maze = new Vector2[]
             {
-                Sprite = _block,
-                Position = new Vector2(50, 50)
-            });
-            _gameObjects.Add(new GameObject
+                new Vector2(firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 1 + firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 2 + firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 3 + firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 4 + firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 5 + firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 6 + firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 7 + firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 8 + firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 9 + firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 10 + firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 11 + firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 12 + firstBlockWidth, firstBlockHeight),
+                new Vector2(widthStep * 12 + firstBlockWidth, heightStep * 1 + firstBlockHeight),
+                new Vector2(widthStep * 12 + firstBlockWidth, heightStep * 2 + firstBlockHeight),
+                new Vector2(widthStep * 12 + firstBlockWidth, heightStep * 3 + firstBlockHeight),
+                new Vector2(widthStep * 12 + firstBlockWidth, heightStep * 5 + firstBlockHeight),
+                new Vector2(widthStep * 12 + firstBlockWidth, heightStep * 6 + firstBlockHeight),
+                new Vector2(widthStep * 12 + firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(widthStep * 11 + firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(widthStep * 10 + firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(widthStep * 9 + firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(widthStep * 8 + firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(widthStep * 7 + firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(widthStep * 6 + firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(widthStep * 5 + firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(widthStep * 4 + firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(widthStep * 3 + firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(widthStep * 2 + firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(widthStep * 1 + firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(firstBlockWidth, heightStep * 7 + firstBlockHeight),
+                new Vector2(firstBlockWidth, heightStep * 6 + firstBlockHeight),
+                new Vector2(firstBlockWidth, heightStep * 5 + firstBlockHeight),
+                new Vector2(firstBlockWidth, heightStep * 3 + firstBlockHeight),
+                new Vector2(firstBlockWidth, heightStep * 2 + firstBlockHeight),
+                new Vector2(firstBlockWidth, heightStep * 1 + firstBlockHeight),
+                new Vector2(widthStep * 1 + firstBlockWidth, heightStep * 5 + firstBlockHeight),
+                new Vector2(widthStep * 2 + firstBlockWidth, heightStep * 5 + firstBlockHeight),
+                new Vector2(widthStep * 1 + firstBlockWidth, heightStep * 6 + firstBlockHeight),
+                new Vector2(widthStep * 2 + firstBlockWidth, heightStep * 6 + firstBlockHeight),
+                new Vector2(widthStep * 4 + firstBlockWidth, heightStep * 5 + firstBlockHeight),
+                new Vector2(widthStep * 4 + firstBlockWidth, heightStep * 4 + firstBlockHeight),
+                new Vector2(widthStep * 4 + firstBlockWidth, heightStep * 3 + firstBlockHeight),
+                new Vector2(widthStep * 3 + firstBlockWidth, heightStep * 3 + firstBlockHeight),
+                new Vector2(widthStep * 2 + firstBlockWidth, heightStep * 3 + firstBlockHeight),
+                new Vector2(widthStep * 1 + firstBlockWidth, heightStep * 3 + firstBlockHeight),
+                new Vector2(widthStep * 5 + firstBlockWidth, heightStep * 5 + firstBlockHeight),
+                new Vector2(widthStep * 6 + firstBlockWidth, heightStep * 5 + firstBlockHeight),
+            };
+
+            _gameObjects = new List<GameObject>();
+
+            foreach (var block in _maze)
             {
-                Sprite = _block,
-                Position = new Vector2(250, 50)
-            });
+                _gameObjects.Add(new GameObject
+                {
+                    Sprite = _block,
+                    Position = block,
+                    Scale = new Vector2(widthRatio, heightRatio)
+                });
+            }
         }
 
         public void Update()

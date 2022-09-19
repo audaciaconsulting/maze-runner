@@ -8,6 +8,8 @@ namespace maze_runner
     public class BlazorGameContext : IGameContext
     {
         private readonly Canvas2DContext _context;
+        public int Width { get; set; }
+        public int Height { get; set; }
 
         public BlazorGameContext(Canvas2DContext context)
         {
@@ -21,6 +23,7 @@ namespace maze_runner
             await _context.SaveAsync();
 
             await _context.TranslateAsync(gameObject.Position.X, gameObject.Position.Y);
+            await _context.ScaleAsync(gameObject.Scale.X, gameObject.Scale.Y);
             await _context.RotateAsync(gameObject.Rotation);
 
             await _context.DrawImageAsync(
