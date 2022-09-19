@@ -1,0 +1,86 @@
+﻿@page "/"
+@using Blazor.Extensions
+@using Blazor.Extensions.Canvas.Canvas2D
+
+@inject IJSRuntime JsRuntime
+
+<img @ref="_whiteBlock" src="assets/whiteblock.png" />
+
+<div id="canvasContainer">
+    <BECanvas @ref="_canvas"></BECanvas>
+</div>
+
+@code
+{
+    private Canvas2DContext _context;
+    private BECanvasComponent _canvas;
+
+    private ElementReference _whiteBlock;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _context = await this._canvas.CreateCanvas2DAsync();
+
+        var canvasMeta = await JsRuntime.InvokeAsync<CanvasMeta>("initCanvas", DotNetObjectReference.Create(this));
+
+        _canvas.Height = canvasMeta.Height;
+        _canvas.Width = canvasMeta.Width;
+
+        await JsRuntime.InvokeAsync<object>("gameWindowResize", DotNetObjectReference.Create(this));
+    }
+
+    [JSInvokable]
+    public async ValueTask GameLoop()
+    {
+        // TODO: Update
+
+        await Draw();
+    }
+
+    private async Task Draw()
+    {
+        await _context.SaveAsync();
+
+        await _context.ClearRectAsync(0, 0, _canvas.Width, _canvas.Height);
+
+        await _context.DrawImageAsync(
+           _whiteBlock,
+           0, 0);
+
+        await _context.RestoreAsync();
+
+        await _context.SetFillStyleAsync("red");
+        await _context.FillRectAsync(0, 0, 100, 100);
+    }
+
+    [JSInvokable]
+    public async ValueTask OnResize(int screenWidth, int screenHeight)
+    {
+    }
+
+    [JSInvokable]
+    public async ValueTask OnKeyDown(int keyCode)
+    {
+    }
+
+    [JSInvokable]
+    public async ValueTask OnKeyUp(int keyCode)
+    {
+    }
+
+    [JSInvokable]
+    public async ValueTask OnMouseDown(int mouseButtonCode, int x, int y)
+    {
+    }
+
+    [JSInvokable]
+    public async ValueTask OnMouseUp(int mouseButtonCode, int x, int y)
+    {
+    }
+
+    public class CanvasMeta
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
+    }
+}
