@@ -1,0 +1,11 @@
+﻿@using maze_runner.game
+
+@foreach (var sprite in Sprites)
+{
+    <img @ref="sprite.Ref" src="@sprite.Source" @onload="sprite.Loaded" />
+}s
+
+@code {
+    [Parameter]
+    public List<Sprite> Sprites { get; set; }
+}
